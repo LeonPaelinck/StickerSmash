@@ -18,7 +18,8 @@ export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [pickedEmoji, setPickedEmoji] = useState<ImageSourcePropType | undefined>(undefined)
+  //const [pickedEmoji, setPickedEmoji] = useState<ImageSourcePropType | undefined>(undefined)
+  const [stickers, setStickers] = useState<ImageSourcePropType[]>([]);
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -55,6 +56,11 @@ export default function Index() {
     setIsModalVisible(true)
   };
 
+  const onSelectSticker = (emoji: ImageSourcePropType) => {
+    setStickers((prev) => [...prev, emoji]);
+    setIsModalVisible(false);
+  };
+
   const onModalClose = async () => {
     setIsModalVisible(false)
   };
@@ -68,7 +74,9 @@ export default function Index() {
     <GestureHandlerRootView style={styles.container}>
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
-         {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}
+         {stickers.map((src, index) => (
+        <EmojiSticker key={index} imageSize={40} stickerSource={src} />
+        ))}
       </View>
       {showAppOptions ? (
                 <View style={styles.optionsContainer}>
@@ -85,7 +93,7 @@ export default function Index() {
         </View>
       )}
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
-        <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
+        <EmojiList onSelect={onSelectSticker} onCloseModal={onModalClose} />
       </EmojiPicker>
     </GestureHandlerRootView>
   );
